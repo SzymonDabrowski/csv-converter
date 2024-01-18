@@ -1,0 +1,18 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [0.0.1] - 2024-01-18
+
+### Added
+
+- Initial release.
+
+### Release Notes
+
+This release is able to process csv files from Pekao S.A. as of 18.01.2024.
+There is a template for Millennium S.A. prepared but it is not working yet.
+
+Please use this programm as you like. It was created to simplify data exporting
+process from bank account to csv file in a very specific format which I personally
+chose. Feel free to adjust this program to best fit your needs.
