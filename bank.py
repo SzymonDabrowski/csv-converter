@@ -4,6 +4,7 @@ from typing import List
 import bank_processor
 import logging
 import priority
+import millennium_dict, pekao_sa_dict
 
 logging.basicConfig(level=logging.INFO)
 
@@ -55,7 +56,7 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
         Returns:
             List[str]: The distinct values from the specified column.
         """
-        distinct_values = set(row[bank.category_column].lower() for row in data[1:])  # Exclude header
+        distinct_values = set(row[bank.category_columns[0]].lower() for row in data[1:])  # Exclude header
         return list(distinct_values)
     
     @staticmethod
@@ -157,34 +158,60 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
 
     @staticmethod
     def define_category_groups():
-        return {
-            0: {'categories' : ['premia, nagroda', 'spłata karty kredytowej', 'czynsz', 'wynagrodzenie', 'spłata kredytu / pożyczki', 'przelew wewnętrzny', 'odsetki, zwrot z inwestycji'],
-                'priority' : None},
-            'Jedzenie': {'categories' : ['artykuły spożywcze'], 'priority' : priority.Priority.ESSENTIAL},
-            'AGD': {'categories' : [], 'priority' : priority.Priority.ESSENTIAL},
-            'Transport': {'categories' : ['transport publiczny', 'paliwo'], 'priority' : priority.Priority.HAVE_TO_HAVE},
-            'Mieszkanie': {'categories' : [], 'priority' : priority.Priority.HAVE_TO_HAVE},
-            'Zdrowie': {'categories' : ['lekarstwa'], 'priority' : priority.Priority.ESSENTIAL},
-            'Uroda': {'categories' : ['kosmetyki', 'uroda, fryzjer, kosmetyczka'], 'priority' : priority.Priority.HAVE_TO_HAVE},
-            'Samorozwój': {'categories' : ['książki'], 'priority' : priority.Priority.NICE_TO_HAVE},
-            'Rozrywka': {'categories' : ['restauracje i kawiarnie', 'fotografia', 'multimedia'], 'priority' : priority.Priority.NICE_TO_HAVE},
-            'Rachunki': {'categories' : ['opłaty bankowe', 'podatki'], 'priority' : priority.Priority.HAVE_TO_HAVE},
-            'Inne': {'categories' : ['hotele', 'zakupy przez internet', 'inne', 'bez kategorii', 'ogród'], 'priority' : priority.Priority.HAVE_TO_HAVE},
-            'Odzież': {'categories' : ['ubrania'], 'priority' : priority.Priority.HAVE_TO_HAVE},
-        }
+        return pekao_sa_dict.category_groups
 
 class MillenniumProcessor(bank_processor.BankProcessor):
     @staticmethod
     def remove_column_names(data):
-        pass
+        """
+        Provided column names are in a first row,
+        this method returns a list without them.
+
+        Args:
+            data (List): The input data containing rows of information.
+
+        Raises:
+            ValueError: If the input data is empty.
+        """
+        if not data:
+            raise ValueError("Input data is empty.")
+        return data[1:]
 
     @staticmethod
     def filter_and_sort_data(data, bank):
-        pass
+        """
+        Filters and sorts the input data based on the specified columns.
+
+        Args:
+            data (List[List[str]]): The input data.
+            columns_to_print (List[int]): The indices of columns to retain in the filtered data.
+                                        Assumes the date is always in the first column.
+
+        Returns:
+            List[List[str]]: The filtered and sorted data.
+        """
+        filtered_data = [[row[i] for i in bank.columns] for row in data]
+        # Sorting the data by the date column
+        filtered_data.sort(key=lambda x: datetime.strptime(x[bank.date_column], bank.date_format))
+        
+        return filtered_data
 
     @staticmethod
     def get_distinct_values(data, bank):
-        print('Not implemented: get_distinct_values')
+        """
+        Gets distinct values from a specified column in the input data.
+
+        Args:
+            data (List[List[str]]): The input data.
+            column_index (int): The index of the column to retrieve distinct values from.
+
+        Returns:
+            List[str]: The distinct values from the specified column.
+        """
+        distinct_values = set()
+        for column in bank.category_columns:
+            distinct_values = distinct_values.union(set(row[column].lower() for row in data[1:]))
+        return list(distinct_values)
 
     @staticmethod
     def compare_sets(new_set, expected_set, category_groups):
@@ -200,7 +227,7 @@ class MillenniumProcessor(bank_processor.BankProcessor):
 
     @staticmethod
     def define_category_groups():
-        pass
+        return millennium_dict.category_groups
 
 class Bank:
     class Name(Enum):
@@ -212,7 +239,6 @@ class Bank:
     columns = []
     date_column = 0
     date_format = "%d.%m.%Y"
-    category_column = 3 # todo
     expected_categories = []
 
     def __init__(self, signature: List[str]):     
@@ -222,6 +248,7 @@ class Bank:
             self.date_format = "%d.%m.%Y"
             self.processor = PekaoSaProcessor()
             self.expected_categories = self.pekao_sa_expected_categories
+            self.category_columns = [3]
         elif (self.millennium_signature == signature):
             self.name = Bank.Name.MILLENNIUM
             # use 3, 5, 6 to determine desciption/recipient and category
@@ -230,6 +257,7 @@ class Bank:
             self.date_format = "%Y-%m-%d"
             self.processor = MillenniumProcessor()
             self.expected_categories = self.millennium_expected_categories
+            self.category_columns = [2, 3]
 
     pekao_sa_signature = ['Data księgowania', 'Data waluty', 'Nadawca / Odbiorca', 'Adres nadawcy / odbiorcy', 
                           'Rachunek źródłowy', 'Rachunek docelowy', 'Tytułem', 'Kwota operacji', 'Waluta', 
