@@ -1,16 +1,15 @@
 import priority
 
 categories = {
-    0: ['',
-         'przelew własny',
-         'przelew natychmiastowy',
-         'przelew blik',
-         'przelew na telefon',
-         'przelew krajowy',
-         'moneyback',
-         'podatek od odsetek',
-         'bank millennium sa',
-         'kapitalizacja ods.'],
+    0: ['przelew własny',
+        'przelew natychmiastowy',
+        'przelew blik',
+        'przelew na telefon',
+        'przelew krajowy',
+        'moneyback',
+        'podatek od odsetek',
+        'bank millennium sa',
+        'kapitalizacja ods.'],
     'Jedzenie': ['ert wypieki',
                   'zabka',
                   'jmp s.a. biedronka',
@@ -41,7 +40,7 @@ categories = {
                    'kasa biletowa kw',
                    'koleo makes trains gre',
                    'przewozy regionalne',
-                   'orlen stacja'
+                   'orlen stacja',
                    'www.mobilet.pl',
                    'avista sp z o o',
                    'ec*mpay aplikacja',
@@ -71,7 +70,7 @@ categories = {
                   'boardgamearena',
                   'chemeli suneli'],
     'Rachunki': ['inea sa',
-                  'ebok.enea.pl'
+                  'ebok.enea.pl',
                   'opłata miesięczna',
                   'opł. mies.',
                   'opłata za',
