@@ -10,10 +10,10 @@ logging.basicConfig(level=logging.INFO)
 
 class PekaoSaProcessor(bank_processor.BankProcessor):
     @staticmethod
-    def remove_column_names(data):
+    def remove_column_names(data: List) -> List:
         """
-        Provided column names are in a first row,
-        this method returns a list without them.
+        Returns a list of data with removed column names. 
+        This method assumes that column names are in the first row.
 
         Args:
             data (List): The input data containing rows of information.
@@ -28,31 +28,27 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
     @staticmethod
     def filter_and_sort_data(data, bank):
         """
-        Filters and sorts the input data based on the specified columns.
+        Filters and sorts the input data based on bank specific columns.
 
         Args:
             data (List[List[str]]): The input data.
-            columns_to_print (List[int]): The indices of columns to retain in the filtered data.
-                                        Assumes the date is always in the first column.
-
+            
         Returns:
             List[List[str]]: The filtered and sorted data.
         """
         filtered_data = [[row[i] for i in bank.columns] for row in data]
-        # Sorting the data by the date column
         filtered_data.sort(key=lambda x: datetime.strptime(x[bank.date_column], bank.date_format))
 
         return filtered_data
     
     @staticmethod
-    def get_distinct_values(data, bank):
+    def get_categories(data, bank):
         """
-        Gets distinct values from a specified column in the input data.
+        Returns distinct categories found in the input data.
 
         Args:
             data (List[List[str]]): The input data.
-            column_index (int): The index of the column to retrieve distinct values from.
-
+            
         Returns:
             List[str]: The distinct values from the specified column.
         """
@@ -60,13 +56,14 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
         return list(distinct_values)
     
     @staticmethod
-    def compare_sets(new_set, expected_set, category_groups):
+    def update_categories(new_set, expected_set, category_groups):
         """
-        Compares two sets and updates category groups accordingly.
+        Compares real_categories to expected_categories and updates category_groups 
+        if real_categories contain records not found in expected_categories.
 
         Args:
-            new_set (Set[str]): The new set of categories.
-            expected_set (Set[str]): The expected set of categories.
+            new_set (List[str]): The new list of categories.
+            expected_set (List[str]): The expected list of categories.
             category_groups (Dict[str, List[str]]): Dictionary representing category groups.
         """
         if set(new_set) != set(expected_set):
@@ -77,9 +74,14 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
                 logging.info(f'The following new categories were added to the "Inne" category group: {new_categories}')
     
     @staticmethod
-    def check_priority_exceptions(data, category_groups):
+    def process(data, category_groups):
         """
-        Checks priority exceptions in the input data and updates category groups accordingly.
+        Processes the input data, taking care of categorisation and prioritisation.
+        If record doesn't have its category, default category is assigned. If record
+        belongs to category defined in exception list, category is set accordingly.
+
+        Returns output data in form ready to be copy-pasted into pre-prepared
+        calculation sheet, like .xlsx. Values are tab separated.
 
         Args:
             data (List[List[str]]): The input data.
@@ -89,7 +91,7 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
             List[List[str]]: The output data with updated priority information.
         """
         exceptions = {
-            priority.Priority.SHOULDNT_HAVE: ['żabka', 'zabka']
+            priority.Priority.SHOULDNT_HAVE: ['żabka', 'zabka', 'mcdonalds']
         }
 
         output_data = []
@@ -116,8 +118,9 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
                 output_priority = priority_enum.value  # Use the string representation
             else:
                 logging.warning(f"Category '{category}' not found in category_groups")
-                # assign default value
-                output_priority = priority.Priority.ESSENTIAL.value  # Use the string representation
+                # Assign default value
+                # Use the string representation
+                output_priority = priority.Priority.ESSENTIAL.value 
 
             # data kategoria priorytet wydano opis
             output_row = [row[0], matching_category_group, output_priority, row[2], row[1]]
@@ -128,24 +131,20 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
     @staticmethod
     def filter_ambiguous_data(data, ambiguous_data):
         """
-        Separates ambiguous data from correct one. Correct data is
-        stored in the 1st argument, while ambiguous one in the 2nd argument.
+        Separates ambiguous data from correct one. Correct data will be stored
+        in 'data', while ambiguous data will be stored in 'ambigous_data'.
 
         Args:
             data (List[List[Union[str, int, None]]]): Input data.
             ambiguous_data (List[List[Union[str, int, None]]]): List to store ambiguous data.
         """
 
-        # Create a list to store indices of items to be removed
         indices_to_remove = []
-
-        # Iterate over the data
         for i, item in enumerate(data):
-            # Check conditions for ambiguous data
             if (
                 (isinstance(item[3], str) and item[3][0] != '-') or  # Check positive value in 4th column
-                (item[1] is None or item[1] == 0) or                # Check None or 0 in 2nd column
-                (item[2] is None)                                   # Check None in 3rd column
+                (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
+                (item[2] is None)                                    # Check None in 3rd column
             ):
                 # If any condition is met, move the item to ambiguous_data
                 ambiguous_data.append(item)
@@ -157,15 +156,16 @@ class PekaoSaProcessor(bank_processor.BankProcessor):
             data.pop(index)
 
     @staticmethod
-    def define_category_groups():
+    def get_category_groups():
+        """Returns bank specific category groups"""
         return pekao_sa_dict.category_groups
 
 class MillenniumProcessor(bank_processor.BankProcessor):
     @staticmethod
     def remove_column_names(data):
         """
-        Provided column names are in a first row,
-        this method returns a list without them.
+        Returns a list of data with removed column names. 
+        This method assumes that column names are in the first row.
 
         Args:
             data (List): The input data containing rows of information.
@@ -180,60 +180,62 @@ class MillenniumProcessor(bank_processor.BankProcessor):
     @staticmethod
     def filter_and_sort_data(data, bank):
         """
-        Filters and sorts the input data based on the specified columns.
+        Filters and sorts the input data based on bank specific columns.
 
         Args:
             data (List[List[str]]): The input data.
-            columns_to_print (List[int]): The indices of columns to retain in the filtered data.
-                                        Assumes the date is always in the first column.
-
+            
         Returns:
             List[List[str]]: The filtered and sorted data.
         """
         filtered_data = [[row[i] for i in bank.columns] for row in data]
-        # Sorting the data by the date column
         filtered_data.sort(key=lambda x: datetime.strptime(x[bank.date_column], bank.date_format))
         
         return filtered_data
 
     @staticmethod
-    def get_distinct_values(data, bank):
+    def get_categories(data, bank):
         """
-        Gets distinct values from a specified column in the input data.
+        Returns distinct categories found in the input data.
 
         Args:
             data (List[List[str]]): The input data.
-            column_index (int): The index of the column to retrieve distinct values from.
-
+            
         Returns:
             List[str]: The distinct values from the specified column.
         """
-        distinct_values = set()
+        
         # for column in bank.category_columns:
         #     distinct_values = distinct_values.union(set(row[column].lower() for row in data[1:]))
         # 
-        # append both columns to avoid false results in compare_sets
+        # append both columns to avoid false results in update_categories
+        distinct_values = set()
         distinct_values = distinct_values.union(set(MillenniumProcessor.append(row, bank.category_columns) for row in data[1:]))
         return list(distinct_values)
 
     @staticmethod
     def append(row, columns):
+        """
+        Appends values found in columns of input row to colums[0]
+        and removes remaining columns[1:] after appending.
+        """
         # appending with ", " return different result.
         # such a result has some strings that should have
-        # been filtered away by compare_sets()
+        # been filtered away by update_categories()
         result = ""
         for column in columns:
             result = result + " " + row[column].lower()
         return result
 
     @staticmethod
-    def compare_sets(new_set, expected_set, category_groups):
+    def update_categories(new_set, expected_set, category_groups):
         """
-        Compares two sets and updates category groups accordingly.
+        Compares real_categories to expected_categories and updates category_groups 
+        if real_categories contain records not found in expected_categories.
 
         Args:
-            new_set (Set[str]): The new set of categories.
-            expected_set (Set[str]): The expected set of categories.
+            new_set (List[str]): The new list of categories.
+            expected_set (List[str]): The expected list of categories.
             category_groups (Dict[str, List[str]]): Dictionary representing category groups.
         """
 
@@ -242,7 +244,7 @@ class MillenniumProcessor(bank_processor.BankProcessor):
                 if expected_value in actual_value:
                     new_set.remove(actual_value)
 
-        # Maybe these values should not be added as categories?
+        # Perhaps these values should not be added as categories?
         if new_set:
             category_groups['Inne']['categories'].extend(new_set)
             logging.info(f'The following new categories were added to the "Inne" category group: {new_set}')
@@ -250,17 +252,23 @@ class MillenniumProcessor(bank_processor.BankProcessor):
     @staticmethod
     def prepare_data(data):
         """
-        WARNING: It mutates original object.
-        Merges columns responsible for categorisation.
+        WARNING: This method mutates original object.
+        Merges columns responsible for categorisation and removes
+        redundant column afterwards.
         """
         for item in data:
             item[2] = item[2] + ' ' + item[3]
             del item[3]
 
     @staticmethod
-    def check_priority_exceptions(data, category_groups):
+    def process(data, category_groups):
         """
-        Checks priority exceptions in the input data and updates category groups accordingly.
+        Processes the input data, taking care of categorisation and prioritisation.
+        If record doesn't have its category, default category is assigned. If record
+        belongs to category defined in exception list, category is set accordingly.
+
+        Returns output data in form ready to be copy-pasted into pre-prepared
+        calculation sheet, like .xlsx. Values are tab separated.
 
         Args:
             data (List[List[str]]): The input data.
@@ -270,7 +278,7 @@ class MillenniumProcessor(bank_processor.BankProcessor):
             List[List[str]]: The output data with updated priority information.
         """
         exceptions = {
-            priority.Priority.SHOULDNT_HAVE: ['żabka', 'zabka']
+            priority.Priority.SHOULDNT_HAVE: ['żabka', 'zabka', 'mcdonalds']
         }
 
         # merge columns with categories
@@ -331,24 +339,21 @@ class MillenniumProcessor(bank_processor.BankProcessor):
     @staticmethod
     def filter_ambiguous_data(data, ambiguous_data):
         """
-        Separates ambiguous data from correct one. Correct data is
-        stored in the 1st argument, while ambiguous one in the 2nd argument.
+        Separates ambiguous data from correct one. Correct data will be stored
+        in 'data', while ambiguous data will be stored in 'ambigous_data'.
 
         Args:
             data (List[List[Union[str, int, None]]]): Input data.
             ambiguous_data (List[List[Union[str, int, None]]]): List to store ambiguous data.
         """
 
-        # Create a list to store indices of items to be removed
         indices_to_remove = []
-
-        # Iterate over the data
         for i, item in enumerate(data):
             # Check conditions for ambiguous data
             if (
                 (isinstance(item[3], str) and item[3][0] != '-') or  # Check positive value in 4th column
-                (item[1] is None or item[1] == 0) or                # Check None or 0 in 2nd column
-                (item[2] is None)                                   # Check None in 3rd column
+                (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
+                (item[2] is None)                                    # Check None in 3rd column
             ):
                 # If any condition is met, move the item to ambiguous_data
                 ambiguous_data.append(item)
@@ -360,7 +365,8 @@ class MillenniumProcessor(bank_processor.BankProcessor):
             data.pop(index)
 
     @staticmethod
-    def define_category_groups():
+    def get_category_groups():
+        """Returns bank specific category groups"""
         return millennium_dict.category_groups
 
 class Bank:
