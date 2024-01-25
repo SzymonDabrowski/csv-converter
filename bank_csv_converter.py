@@ -2,7 +2,7 @@ import argparse
 import csv_reader
 import logging
 import bank
-import bank_processor
+import processors.millennium_processor, processors.pekao_sa_processor
 import pekao_sa_dict, millennium_dict
 
 logging.basicConfig(level=logging.INFO)
@@ -19,9 +19,9 @@ def main():
     processor = None
     signature = csv_reader.Csv.get_column_names(filename)
     if (signature == pekao_sa_dict.signature):
-        processor = bank_processor.PekaoSaProcessor()
+        processor = processors.pekao_sa_processor.PekaoSaProcessor()
     elif (signature == millennium_dict.signature):
-        processor = bank_processor.MillenniumProcessor()
+        processor = processors.millennium_processor.MillenniumProcessor()
     else:
         logging.error(f"Could not determine bank processor bases on signature: {signature}")
         exit(1)

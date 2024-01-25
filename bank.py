@@ -1,5 +1,5 @@
 import logging
-import bank_processor
+import processors.bank_processor as bank_processor
 
 logging.basicConfig(level=logging.INFO)
 
