@@ -18,7 +18,7 @@ def main():
     
     data_without_column_names = bank_instance.processor.remove_column_names(csv_data)
     filtered_and_sorted_data = bank_instance.processor.filter_and_sort_data(data_without_column_names, bank_instance)
-    
+
     categories = bank_instance.processor.get_categories(filtered_and_sorted_data, bank_instance)
     category_groups = bank_instance.processor.get_category_groups()
     expected_categories = bank_instance.expected_categories
