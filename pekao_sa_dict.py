@@ -1,5 +1,16 @@
 import priority
 
+signature = ['Data księgowania', 'Data waluty', 'Nadawca / Odbiorca', 'Adres nadawcy / odbiorcy', 
+             'Rachunek źródłowy', 'Rachunek docelowy', 'Tytułem', 'Kwota operacji', 'Waluta', 
+             'Numer referencyjny', 'Typ operacji', 'Kategoria']
+
+expected_categories = ['kosmetyki', 'hotele', 'restauracje i kawiarnie', 'uroda, fryzjer, kosmetyczka', 
+                       'premia, nagroda', 'inne', 'artykuły spożywcze', 'zakupy przez internet', 
+                       'przelew wewnętrzny', 'czynsz', 'fotografia', 'książki', 'lekarstwa', 'ubrania', 
+                       'bez kategorii', 'wynagrodzenie', 'odsetki, zwrot z inwestycji', 
+                       'spłata kredytu / pożyczki', 'ogród', 'opłaty bankowe', 'paliwo', 'transport publiczny', 
+                       'podatki', 'multimedia', 'spłata karty kredytowej']
+
 category_groups = {
     0: {'categories' : ['premia, nagroda', 'spłata karty kredytowej', 'czynsz', 'wynagrodzenie', 'spłata kredytu / pożyczki', 'przelew wewnętrzny', 'odsetki, zwrot z inwestycji'],
         'priority' : None},

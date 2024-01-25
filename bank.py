@@ -1,7 +1,6 @@
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List
-import bank_processor
 import logging
 import priority
 import millennium_dict, pekao_sa_dict
@@ -21,50 +20,37 @@ class Bank:
     expected_categories = []
 
     def __init__(self, signature: List[str]):     
-        if (self.pekao_sa_signature == signature):
+        if (signature == pekao_sa_dict.signature):
             self.name = Bank.Name.PEKAO_SA
             self.columns = [0, 2, 7, 11]
             self.date_format = "%d.%m.%Y"
             self.processor = PekaoSaProcessor()
-            self.expected_categories = self.pekao_sa_expected_categories
+            self.expected_categories = pekao_sa_dict.expected_categories
             self.category_columns = [3]
-        elif (self.millennium_signature == signature):
+        elif (signature == millennium_dict.signature):
             self.name = Bank.Name.MILLENNIUM
             # use 3, 5, 6 to determine desciption/recipient and category
             # use 7,8 to determine amount of money
             self.columns = [1, 3, 5, 6, 7, 8]    
             self.date_format = "%Y-%m-%d"
             self.processor = MillenniumProcessor()
-            self.expected_categories = self.millennium_expected_categories
+            self.expected_categories = millennium_dict.expected_categories
             self.category_columns = [2, 3]
+        else:
+            logging.error(f"Could not determine bank processor bases on signature: {signature}")
 
-    pekao_sa_signature = ['Data księgowania', 'Data waluty', 'Nadawca / Odbiorca', 'Adres nadawcy / odbiorcy', 
-                          'Rachunek źródłowy', 'Rachunek docelowy', 'Tytułem', 'Kwota operacji', 'Waluta', 
-                          'Numer referencyjny', 'Typ operacji', 'Kategoria']
-    millennium_signature = ['Numer rachunku/karty', 'Data transakcji', 'Data rozliczenia', 
-                            'Rodzaj transakcji', 'Na konto/Z konta', 'Odbiorca/Zleceniodawca', 
-                            'Opis', 'Obciążenia', 'Uznania', 'Saldo', 'Waluta']
+    def process(self, data):
+        data_without_column_names = self.processor.remove_column_names(data)
+        filtered_and_sorted_data = self.processor.filter_and_sort_data(data_without_column_names, self)
+        categories = self.processor.get_categories(filtered_and_sorted_data, self)
+        category_groups = self.processor.get_category_groups()
+        self.processor.update_categories(categories, self.expected_categories, category_groups)
+        return self.processor.process(filtered_and_sorted_data, category_groups)
+       
+    def filter_ambiguous_data(self, data, ambiguous_data):
+        self.processor.filter_ambiguous_data(data, ambiguous_data)
 
-    pekao_sa_expected_categories = ['kosmetyki', 'hotele', 'restauracje i kawiarnie', 'uroda, fryzjer, kosmetyczka', 
-                               'premia, nagroda', 'inne', 'artykuły spożywcze', 'zakupy przez internet', 
-                               'przelew wewnętrzny', 'czynsz', 'fotografia', 'książki', 'lekarstwa', 'ubrania', 
-                               'bez kategorii', 'wynagrodzenie', 'odsetki, zwrot z inwestycji', 
-                               'spłata kredytu / pożyczki', 'ogród', 'opłaty bankowe', 'paliwo', 'transport publiczny', 
-                               'podatki', 'multimedia', 'spłata karty kredytowej']
-    
-    millennium_expected_categories = ['przelew własny', 'przelew natychmiastowy', 'przelew blik', 'przelew na telefon',
-                               'przelew krajowy', 'moneyback', 'podatek od odsetek', 'bank millennium sa', 'kapitalizacja ods.',
-                               'ert wypieki', 'zabka', 'jmp s.a. biedronka', 'biedronka', 'zagrodnicza caffe', 'patryk piasny',
-                               'wesola pani', 'lidl', 'zpm biegun', 'biegun wedliny', 'mcdonalds', 'stokrotka', 'cukiernia', 
-                               '1-minute', 'tartaletka', 'phu anna', 'mirabe', 'pepco', 'uber.com', 'uber', 'intercity.pl',
-                               'jakdojade.pl', 'bolt.eu', 'freenow', 'koleo.pl', 'koleje wielkopolskie', 'koleo bilety kolejowe',
-                               'kasa biletowa kw', 'koleo makes trains gre', 'przewozy regionalne', 'orlen stacja', 'www.mobilet.pl',
-                               'avista sp z o o', 'ec*mpay aplikacja', 'ec*zasilenie konta', 'automat spec sp zoo', 'apteka',
-                               'stomatolog', 'rentgen', 'syntak spółka', 'rossmann', 'drogeria natura', 'www.madeinlab.pl',
-                               'restauracja', 'empik.com', 'empik s.a.', 'google play apps', 'hbo max', 'legimi s.a.', 'tvn s.a.',
-                               'lody bosko', 'cacao republica', 'rozlewnia ck wina', 'zdolni spolka zoo', 'the table sp. z o.o.',
-                               'boardgamearena', 'chemeli suneli', 'inea sa', 'ebok.enea.pl', 'opłata miesięczna', 'opł. mies.',
-                               'opłata za', 'bgk', 'binance.com', 'ccc', 'lpp cropp', 'wizaki', 'salon nipplex']
+import bank_processor
 
 class PekaoSaProcessor(bank_processor.BankProcessor):
     @staticmethod
@@ -426,3 +412,4 @@ class MillenniumProcessor(bank_processor.BankProcessor):
     def get_category_groups() -> Dict:
         """Returns bank specific category groups"""
         return millennium_dict.category_groups
+
