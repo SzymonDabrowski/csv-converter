@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
-from bank import Bank
 
 class BankProcessor(ABC):
     @abstractmethod
@@ -9,17 +8,17 @@ class BankProcessor(ABC):
         pass
 
     @abstractmethod
-    def filter_and_sort_data(data: List, bank: Bank) -> List:
+    def filter_and_sort_data(data: List) -> List:
         """Filters and sorts input data"""
         pass
 
     @abstractmethod
-    def get_categories(data: List, bank: Bank) -> List:
+    def get_categories(data: List) -> List:
         """Returns distinct categories found in the input data"""
         pass
  
     @abstractmethod
-    def update_categories(real_categories: List, expected_categories: List, category_groups: Dict):
+    def update_categories(real_categories: List, category_groups: Dict):
         """
         Compares real_categories to expected_categories and updates category_groups 
         if real_categories contain records not found in expected_categories.
@@ -41,4 +40,9 @@ class BankProcessor(ABC):
         Separates ambiguous data from correct one. Correct data will be stored
         in 'data', while ambiguous data will be stored in 'ambigous_data'.
         """
+        pass
+
+    @abstractmethod
+    def get_category_groups() -> Dict:
+        """Returns bank specific category groups"""
         pass
