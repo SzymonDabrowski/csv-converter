@@ -65,10 +65,10 @@ def main():
     bank_instance = bank.Bank(processor)
 
     data = csv_reader.Csv.read(filename)
-    output_data = bank_instance.process(data)
+    processed_data = bank_instance.process(data)
 
     ambiguous_data = []
-    bank_instance.filter_ambiguous_data(output_data, ambiguous_data)
+    output_data, ambiguous_data = bank_instance.filter_ambiguous_data(processed_data)
 
     if output_data is None and ambiguous_data is None:
         print("No output data available")

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import logging
 from datetime import datetime
 import priority
@@ -134,16 +134,19 @@ class PekaoSaProcessor(processor.BankProcessor):
         return output_data
     
     @staticmethod
-    def filter_ambiguous_data(data: List, ambiguous_data: List):
+    def filter_ambiguous_data(data: List) -> Tuple:
         """
-        Separates ambiguous data from correct one. Correct data will be stored
-        in 'data', while ambiguous data will be stored in 'ambigous_data'.
+        Separates ambiguous data from correct one. Returns a tuple of correct
+        data and ambiguous data in that order.
 
         Args:
             data (List[List[Union[str, int, None]]]): Input data.
-            ambiguous_data (List[List[Union[str, int, None]]]): List to store ambiguous data.
+        
+        Returns:
+            Tuple[List, List]: A tuple containing the correct data and ambiguous 
+            data in that order.
         """
-
+        ambiguous_data = []
         indices_to_remove = []
         for i, item in enumerate(data):
             if (
@@ -159,6 +162,8 @@ class PekaoSaProcessor(processor.BankProcessor):
         # Remove items from data in reverse order to avoid index issues
         for index in reversed(indices_to_remove):
             data.pop(index)
+        
+        return (data, ambiguous_data)
 
     @staticmethod
     def get_category_groups() -> Dict:
