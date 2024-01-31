@@ -165,7 +165,7 @@ class MillenniumProcessor(processor.BankProcessor):
                         matching_category_group = category_group
                         found = True
             
-            output_priority = None
+            output_priority = ""
             # Check if any exception is a substring of the description
             exception_found = any(exception in description for exception in exceptions[priority.Priority.SHOULDNT_HAVE])
             if exception_found:

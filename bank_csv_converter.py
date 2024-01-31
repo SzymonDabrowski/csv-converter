@@ -1,11 +1,15 @@
 import argparse
-import csv_reader
 import logging
-import bank
-from processors import millennium_processor, pekao_sa_processor, bank_processor
-from typing import Tuple
-import pekao_sa_dict, millennium_dict
 import os
+from typing import Tuple
+import csv_reader
+import bank
+from exceptions import Exceptions
+from processors import millennium_processor
+from processors import pekao_sa_processor
+from processors import bank_processor
+import pekao_sa_dict
+import millennium_dict
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,8 +32,7 @@ def determine_processor(filename: str) -> bank_processor.BankProcessor:
     elif signature == millennium_dict.signature:
         return millennium_processor.MillenniumProcessor()
     else:
-        logging.error(f"Could not determine bank processor based on signature: {signature}")
-        exit(1)
+        raise Exceptions.WrongSignatureError(signature)
 
 def determine_output_files(args, filename) -> Tuple[str, str]:
     """
@@ -53,7 +56,8 @@ def determine_output_files(args, filename) -> Tuple[str, str]:
 def main():
     parser = argparse.ArgumentParser(description='Process a CSV file.')
     parser.add_argument('filename', type=str, help='Path to the CSV file')
-    parser.add_argument('output', type=str, nargs='?', default=None, help='Output CSV file (default: out_<filename>.csv)')
+    parser.add_argument('output', type=str, nargs='?', default=None,
+                        help='Output CSV file (default: out_<filename>.csv)')
 
     args = parser.parse_args()
 
