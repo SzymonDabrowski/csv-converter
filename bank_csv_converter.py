@@ -45,9 +45,7 @@ def determine_output_files(args, filename) -> Tuple[str, str]:
     output_file = args.output
     base_filename, _ = os.path.splitext(os.path.basename(filename))
 
-    if output_file is None:
-        output_file = f"out_{base_filename}.csv"
-
+    output_file = output_file or f"out_{base_filename}.csv"
     ambiguous_file = os.path.splitext(output_file)[0] + "_ambiguous.csv"
 
     return output_file, ambiguous_file
