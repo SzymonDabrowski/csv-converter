@@ -71,7 +71,7 @@ def main():
     output_data, ambiguous_data = bank_instance.filter_ambiguous_data(processed_data)
 
     if output_data is None and ambiguous_data is None:
-        print("No output data available")
+        logging.info("No output data available")
     else:
         output_file, ambiguous_file = determine_output_files(args, filename)
 
