@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 class BankProcessor(ABC):
     @abstractmethod
@@ -35,10 +35,10 @@ class BankProcessor(ABC):
         pass
 
     @abstractmethod
-    def filter_ambiguous_data(data: List, ambiguous_data: List):
+    def filter_ambiguous_data(data: List) -> Tuple:
         """
-        Separates ambiguous data from correct one. Correct data will be stored
-        in 'data', while ambiguous data will be stored in 'ambigous_data'.
+        Separates ambiguous data from correct one. Returns a tuple of correct
+        data and ambiguous data in that order.
         """
         pass
 
