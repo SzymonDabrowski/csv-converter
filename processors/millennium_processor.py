@@ -4,6 +4,7 @@ from datetime import datetime
 import priority
 import millennium_dict
 from bank_names import BankName
+from category import Category
 import processors.bank_processor as processor
 
 class MillenniumProcessor(processor.BankProcessor):
@@ -101,7 +102,7 @@ class MillenniumProcessor(processor.BankProcessor):
 
         # Perhaps these values should not be added as categories?
         if new_set:
-            category_groups['Inne']['categories'].extend(new_set)
+            category_groups[Category.OTHERS]['categories'].extend(new_set)
             logging.info(f'The following new categories were added to the "Inne" category group: {new_set}')
 
     @staticmethod
@@ -145,32 +146,14 @@ class MillenniumProcessor(processor.BankProcessor):
             category = row[2].lower() # 2 and 3 are merged now
             description = row[2].lower() # 1 is not descriptive, 2 and 3 are
 
-            # Find the category group based on the category
-            matching_category_group = None
-            found = False
-            for category_group, group_info in category_groups.items():
-                if found is True:
-                    found = False
-                    break
-                
-                # category is a whole long string
-                # search for a substring of 
-                # group_info['categories'] in it
-                for val in group_info['categories']:
-                    if val in category:
-                        # description should be changed, e.g. when string like:
-                        # jmp s.a. biedronka 101, poznan, ul... is found, replace it with:
-                        # a value from category_groups['categories'], i.e. jmp s.a. biedronka
-                        row[1] = val
-                        matching_category_group = category_group
-                        found = True
-            
+            matching_category_group = MillenniumProcessor.get_category_group(row, category, category_groups.items())
+
             output_priority = ""
             # Check if any exception is a substring of the description
             exception_found = any(exception in description for exception in exceptions[priority.Priority.SHOULDNT_HAVE])
             if exception_found:
                 output_priority = priority.Priority.SHOULDNT_HAVE.value  # Use the string representation
-            elif matching_category_group is not None:
+            elif matching_category_group is not Category.NONE:
                 # Access the priority information and update it if needed
                 priority_enum = category_groups[matching_category_group]['priority'] or priority.Priority.ESSENTIAL
                 output_priority = priority_enum.value  # Use the string representation
@@ -186,10 +169,33 @@ class MillenniumProcessor(processor.BankProcessor):
             elif row[4]:
                 money = float(row[4])
 
-            output_row = [row[0], matching_category_group, output_priority, money, row[1]]
+            output_row = [row[0], matching_category_group.value, output_priority, money, row[1]]
             output_data.append(output_row)
 
         return output_data
+
+    @staticmethod
+    def get_category_group(row, category, category_group_items):
+        # Find the category group based on the category
+        matching_category_group = Category.NONE
+        found = False
+        for category_group, group_info in category_group_items:
+            if found is True:
+                found = False
+                break
+
+            # category is a whole long string
+            # search for a substring of 
+            # group_info['categories'] in it
+            for val in group_info['categories']:
+                if val in category:
+                    # description should be changed, e.g. when string like:
+                    # jmp s.a. biedronka 101, poznan, ul... is found, replace it with:
+                    # a value from category_groups['categories'], i.e. jmp s.a. biedronka
+                    row[1] = val
+                    matching_category_group = category_group
+                    found = True
+        return matching_category_group
 
     @staticmethod
     def filter_ambiguous_data(data: List) -> Tuple:

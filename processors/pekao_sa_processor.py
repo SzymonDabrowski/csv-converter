@@ -4,6 +4,7 @@ from datetime import datetime
 import priority
 import pekao_sa_dict
 from bank_names import BankName
+from category import Category
 import processors.bank_processor as processor
 
 class PekaoSaProcessor(processor.BankProcessor):
@@ -75,7 +76,7 @@ class PekaoSaProcessor(processor.BankProcessor):
             new_categories = set(new_set) - set(PekaoSaProcessor.expected_categories)
             if new_categories:
                 # Add new categories to the 'Inne' category group by default
-                category_groups['Inne']['categories'].extend(new_categories)
+                category_groups[Category.OTHERS]['categories'].extend(new_categories)
                 logging.info(f'The following new categories were added to the "Inne" category group: {new_categories}')
     
     @staticmethod
@@ -106,7 +107,7 @@ class PekaoSaProcessor(processor.BankProcessor):
             description = row[1].lower()
 
             # Find the category group based on the category
-            matching_category_group = None
+            matching_category_group = Category.NONE
             for category_group, group_info in category_groups.items():
                 if category in group_info['categories']:
                     matching_category_group = category_group
@@ -117,7 +118,7 @@ class PekaoSaProcessor(processor.BankProcessor):
             exception_found = any(exception in description for exception in exceptions[priority.Priority.SHOULDNT_HAVE])
             if exception_found:
                 output_priority = priority.Priority.SHOULDNT_HAVE.value  # Use the string representation
-            elif matching_category_group is not None:
+            elif matching_category_group is not Category.NONE:
                 # Access the priority information and update it if needed
                 priority_enum = category_groups[matching_category_group]['priority'] or priority.Priority.ESSENTIAL
                 output_priority = priority_enum.value  # Use the string representation
@@ -128,7 +129,7 @@ class PekaoSaProcessor(processor.BankProcessor):
                 output_priority = priority.Priority.ESSENTIAL.value 
 
             # data kategoria priorytet wydano opis
-            output_row = [row[0], matching_category_group, output_priority, row[2], row[1]]
+            output_row = [row[0], matching_category_group.value, output_priority, row[2], row[1]]
             output_data.append(output_row)
 
         return output_data
