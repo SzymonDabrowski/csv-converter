@@ -13,7 +13,8 @@ expected_categories = ['kosmetyki', 'hotele', 'restauracje i kawiarnie', 'uroda,
                        'podatki', 'multimedia', 'spłata karty kredytowej']
 
 category_groups = {
-    Category.IGNORED: {'categories' : ['premia, nagroda', 'spłata karty kredytowej', 'czynsz', 'wynagrodzenie', 'spłata kredytu / pożyczki', 'przelew wewnętrzny', 'odsetki, zwrot z inwestycji'],
+    Category.IGNORED: {'categories' : ['premia, nagroda', 'spłata karty kredytowej', 'czynsz', 'wynagrodzenie',
+                                       'spłata kredytu / pożyczki', 'przelew wewnętrzny', 'odsetki, zwrot z inwestycji'],
         'priority' : None},
     Category.FOOD: {'categories' : ['artykuły spożywcze'], 'priority' : priority.Priority.ESSENTIAL},
     Category.HOUSEHOLD_APPLIANCE: {'categories' : [], 'priority' : priority.Priority.ESSENTIAL},

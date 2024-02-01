@@ -4,7 +4,7 @@ import os
 from typing import Tuple
 import csv_reader
 import bank
-from exceptions import Exceptions
+from exceptions import exceptions 
 from processors import millennium_processor
 from processors import pekao_sa_processor
 from processors import bank_processor
@@ -24,15 +24,15 @@ def determine_processor(filename: str) -> bank_processor.BankProcessor:
         bank_processor.BankProcessor: An instance of the determined bank processor.
 
     Raises:
-        SystemExit: If the bank processor cannot be determined based on the signature.
+        WrongSignatureException: If the bank processor cannot be determined based on the signature.
     """
     signature = csv_reader.Csv.get_column_names(filename)
     if signature == pekao_sa_dict.signature:
         return pekao_sa_processor.PekaoSaProcessor()
-    elif signature == millennium_dict.signature:
+    if signature == millennium_dict.signature:
         return millennium_processor.MillenniumProcessor()
-    else:
-        raise Exceptions.WrongSignatureError(signature)
+
+    raise exceptions.WrongSignatureError(signature)
 
 def determine_output_files(args, filename) -> Tuple[str, str]:
     """
@@ -79,6 +79,7 @@ def main():
 
         csv_reader.Csv.export(output_data, output_file)
         csv_reader.Csv.export(ambiguous_data, ambiguous_file)
+
 
 if __name__ == "__main__":
     main()

@@ -1,13 +1,13 @@
 import copy
 import logging
-import processors.bank_processor as bank_processor
+from processors.bank_processor import BankProcessor
 from typing import List, Tuple
 
 logging.basicConfig(level=logging.INFO)
 
 class Bank:
-    def __init__(self, processor: bank_processor.BankProcessor):     
-       self.processor = processor
+    def __init__(self, processor: BankProcessor):     
+        self.processor = processor
 
     def process(self, data: List):
         """

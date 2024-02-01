@@ -62,18 +62,18 @@ class PekaoSaProcessor(processor.BankProcessor):
         return list(distinct_values)
     
     @staticmethod
-    def update_categories(new_set: List, category_groups: Dict):
+    def update_categories(real_categories: List, category_groups: Dict):
         """
         Compares real_categories to expected_categories and updates category_groups 
         if real_categories contain records not found in expected_categories.
 
         Args:
-            new_set (List[str]): The new list of categories.
+            real_categories (List[str]): The new list of categories.
             expected_set (List[str]): The expected list of categories.
             category_groups (Dict[str, List[str]]): Dictionary representing category groups.
         """
-        if set(new_set) != set(PekaoSaProcessor.expected_categories):
-            new_categories = set(new_set) - set(PekaoSaProcessor.expected_categories)
+        if set(real_categories) != set(PekaoSaProcessor.expected_categories):
+            new_categories = set(real_categories) - set(PekaoSaProcessor.expected_categories)
             if new_categories:
                 # Add new categories to the 'Inne' category group by default
                 category_groups[Category.OTHERS]['categories'].extend(new_categories)
