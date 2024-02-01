@@ -20,31 +20,22 @@ This project is designed to process CSV files from a bank and perform various op
 
 ### Installation
 
-1. Clone the repository:
+Clone the repository and go to project directory.
 
-   ```bash
-   git clone https://github.com/your-username/your-project.git
-   ```
-
-2. Navigate to project directory:
-   ```
-   cd your-project
-   ```
-
-3. Install dependencies (if any):
-    ```
-    pip install -r requirements.txt
-    ```
+Install dependencies:
+```
+pip install -r requirements.txt
+```
 
 ### Usage
 
 1. Run the script:
     ```
-    python csv_wrapper.py input.csv output.csv
+    python bank_csv_converter.py input.csv output.csv
     ```
 
-- Replace input.csv with the path to your input CSV file.
-- Replace output.csv with the desired output file name.
+- input.csv - replace with the path to your input CSV file.
+- (optional) output.csv - replace with the desired output file name.
 
 ### Contributing
 
