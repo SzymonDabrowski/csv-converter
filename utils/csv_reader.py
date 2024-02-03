@@ -1,10 +1,11 @@
 import csv
 import chardet
 from typing import List
+import utils.sanitizer as sanitizer
 
 class Csv:
     @staticmethod
-    def read(filename: str) -> List[List[str]]:
+    def read(filename: str, sanitize: bool = False) -> List[List[str]]:
         encoding = 'utf-8'
         with open(filename, 'rb') as raw_file:
             encoding = chardet.detect(raw_file.read(1024))['encoding']
@@ -14,10 +15,17 @@ class Csv:
             file.seek(0)
             reader = csv.reader(file, delimiter=dialect.delimiter, quotechar=dialect.quotechar)
             data = list(reader)
+
+        if sanitize:
+            data = sanitizer.Sanitizer.sanitize_data(data)
+
         return data
     
     @staticmethod
-    def export(data: List[List[str]], filename: str) -> None:
+    def export(data: List[List[str]], filename: str, sanitize: bool = False) -> None:
+        if sanitize:
+            data = sanitizer.Sanitizer.sanitize_data(data)
+
         with open(filename, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file, delimiter='\t', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for row in data:

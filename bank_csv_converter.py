@@ -1,8 +1,8 @@
 import argparse
 import logging
 import os
-from typing import Tuple
-import csv_reader
+from typing import List, Tuple
+import utils.csv_reader as csv_reader
 import bank
 from exceptions import exceptions 
 from processors import millennium_processor
@@ -77,8 +77,8 @@ def main():
     else:
         output_file, ambiguous_file = determine_output_files(args, filename)
 
-        csv_reader.Csv.export(output_data, output_file)
-        csv_reader.Csv.export(ambiguous_data, ambiguous_file)
+        csv_reader.Csv.export(output_data, output_file, sanitize=True)
+        csv_reader.Csv.export(ambiguous_data, ambiguous_file, sanitize=True)
 
 
 if __name__ == "__main__":
