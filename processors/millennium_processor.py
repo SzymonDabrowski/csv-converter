@@ -84,26 +84,26 @@ class MillenniumProcessor(processor.BankProcessor):
         return result
 
     @staticmethod
-    def update_categories(new_set: List, category_groups: Dict):
+    def update_categories(real_categories: List, category_groups: Dict):
         """
         Compares real_categories to expected_categories and updates category_groups 
         if real_categories contain records not found in expected_categories.
 
         Args:
-            new_set (List[str]): The new list of categories.
+            real_categories (List[str]): The new list of categories.
             expected_set (List[str]): The expected list of categories.
             category_groups (Dict[str, List[str]]): Dictionary representing category groups.
         """
 
         for expected_value in MillenniumProcessor.expected_categories:
-            for actual_value in new_set:
+            for actual_value in real_categories:
                 if expected_value in actual_value:
-                    new_set.remove(actual_value)
+                    real_categories.remove(actual_value)
 
         # Perhaps these values should not be added as categories?
-        if new_set:
-            category_groups[Category.OTHERS]['categories'].extend(new_set)
-            logging.info(f'The following new categories were added to the "Inne" category group: {new_set}')
+        if real_categories:
+            category_groups[Category.OTHERS]['categories'].extend(real_categories)
+            logging.info(f'The following new categories were added to the "Inne" category group: {real_categories}')
 
     @staticmethod
     def prepare_data(data: List):

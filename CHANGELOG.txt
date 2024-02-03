@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - 2024-02-03
+
+### Changed
+
+- Specialied bank processors classes (MillenniumProcessor, PekaoSaProcessor),
+which will process data according to their implementation details. These classes
+are injected into Bank instance by passing them as constructor arguments.
+- Bank uses deep copy of data - preventing leaky abstraction.
+
+### Added
+
+- Docstring to multiple methods and classes.
+- Exceptions module
+- Category enum
+
+### Release Notes
+
+New classes have been added to this release, which provide cleaner and more
+readable code in form of a layer of abstraction. \
+Category enum is used across whole application which decreases changes for typos. \
+Docstrings have been added to multiple classes and methods for sake of proper documentation.\
+Bank uses deep copy of data - it prevents leaky abstraction.
+
+## [0.0.2] - 2024-02-03
+
+### Release Notes
+
+Release as version 0.0.3
+
 ## [0.0.1] - 2024-01-18
 
 ### Added
