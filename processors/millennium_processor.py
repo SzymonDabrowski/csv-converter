@@ -96,7 +96,8 @@ class MillenniumProcessor(processor.BankProcessor):
         """
 
         for expected_value in MillenniumProcessor.expected_categories:
-            for actual_value in real_categories:
+            categories_copy = real_categories.copy()
+            for actual_value in categories_copy:
                 if expected_value in actual_value:
                     real_categories.remove(actual_value)
 
@@ -163,13 +164,14 @@ class MillenniumProcessor(processor.BankProcessor):
                 output_priority = priority.Priority.ESSENTIAL.value  # Use the string representation
 
             # data kategoria priorytet wydano opis
+            # TODO: fix positive/negative values, see line 174
             money = 0.0
             if row[3]:
                 money = float(row[3])
             elif row[4]:
                 money = float(row[4])
 
-            output_row = [row[0], matching_category_group.value, output_priority, money, row[1]]
+            output_row = [row[0], matching_category_group.value, output_priority, -1 * money, row[1]]
             output_data.append(output_row)
 
         return output_data
@@ -215,7 +217,7 @@ class MillenniumProcessor(processor.BankProcessor):
         for i, item in enumerate(data):
             # Check conditions for ambiguous data
             if (
-                (isinstance(item[3], str) and item[3][0] != '-') or  # Check positive value in 4th column
+                (isinstance(item[3], str) and item[3][0] == '-') or  # Check negative (income) value in 4th column
                 (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
                 (item[2] is None)                                    # Check None in 3rd column
             ):
@@ -227,7 +229,7 @@ class MillenniumProcessor(processor.BankProcessor):
         # Remove items from data in reverse order to avoid index issues
         for index in reversed(indices_to_remove):
             data.pop(index)
-        
+
         return (data, ambiguous_data)
 
     @staticmethod

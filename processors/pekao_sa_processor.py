@@ -128,6 +128,14 @@ class PekaoSaProcessor(processor.BankProcessor):
                 # Use the string representation
                 output_priority = priority.Priority.ESSENTIAL.value 
 
+            # change , to . in float values
+            # TODO: fix this and use locale or maybe add decimal separator
+            # as another argument to CLI
+            row[2] = row[2].replace(',', '.')
+            row[2] = row[2].replace(" ", "")
+            row[2] = -1 * float(row[2])
+            row[2] = str(row[2]).replace('.', ',')
+
             # data kategoria priorytet wydano opis
             output_row = [row[0], matching_category_group.value, output_priority, row[2], row[1]]
             output_data.append(output_row)
@@ -151,7 +159,7 @@ class PekaoSaProcessor(processor.BankProcessor):
         indices_to_remove = []
         for i, item in enumerate(data):
             if (
-                (isinstance(item[3], str) and item[3][0] != '-') or  # Check positive value in 4th column
+                (isinstance(item[3], str) and item[3][0] == '-') or  # Check negative (income) value in 4th column
                 (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
                 (item[2] is None)                                    # Check None in 3rd column
             ):

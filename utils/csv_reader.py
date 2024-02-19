@@ -14,15 +14,13 @@ class Csv:
             dialect = csv.Sniffer().sniff(file.read(4096)) # throws
             file.seek(0)
             reader = csv.reader(file, delimiter=dialect.delimiter, quotechar=dialect.quotechar)
-            data = list(reader)
+            return sanitizer.Sanitizer.sanitize_data(reader) if sanitize else list(reader)
 
-        if sanitize:
-            data = sanitizer.Sanitizer.sanitize_data(data)
-
-        return data
-    
     @staticmethod
     def export(data: List[List[str]], filename: str, sanitize: bool = False) -> None:
+        # About 10% faster execution than sanitizng each row separately
+        # when calling writer.writerow(), while using recursive 
+        # implementation of sanitize_data
         if sanitize:
             data = sanitizer.Sanitizer.sanitize_data(data)
 
@@ -41,5 +39,5 @@ class Csv:
             dialect = csv.Sniffer().sniff(file.read(4096)) # throws
             file.seek(0)
             reader = csv.reader(file, delimiter=dialect.delimiter, quotechar=dialect.quotechar)
-            data = list(reader)
-        return data[0]
+            data = next(reader)
+        return data
