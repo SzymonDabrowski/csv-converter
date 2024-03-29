@@ -1,7 +1,7 @@
 import copy
 import logging
-from processors.bank_processor import BankProcessor
 from typing import List, Tuple
+from processors.bank_processor import BankProcessor
 
 logging.basicConfig(level=logging.INFO)
 

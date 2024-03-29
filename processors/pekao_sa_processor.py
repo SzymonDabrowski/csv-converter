@@ -146,7 +146,7 @@ class PekaoSaProcessor(processor.BankProcessor):
                 output_priority = priority.Priority.ESSENTIAL.value
 
             # change , to . in float values
-            # TODO: fix this and use locale or maybe add decimal separator
+            # FIXME: fix this and use locale or maybe add decimal separator
             # as another argument to CLI
             row[2] = row[2].replace(",", ".")
             row[2] = row[2].replace(" ", "")

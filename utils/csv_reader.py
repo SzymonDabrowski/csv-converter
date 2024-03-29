@@ -1,7 +1,7 @@
 import csv
-import chardet
 from typing import List
-import utils.sanitizer as sanitizer
+import chardet
+from utils import sanitizer
 
 
 class Csv:

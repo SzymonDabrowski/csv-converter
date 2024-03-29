@@ -1,8 +1,9 @@
 import argparse
 import logging
 import os
-from typing import List, Tuple
-import utils.csv_reader as csv_reader
+from typing import Tuple
+import timeit
+from utils import csv_reader
 import bank
 from exceptions import exceptions
 from processors import millennium_processor
@@ -10,8 +11,6 @@ from processors import pekao_sa_processor
 from processors import bank_processor
 import pekao_sa_dict
 import millennium_dict
-
-import timeit
 
 logging.basicConfig(level=logging.INFO)
 
@@ -95,8 +94,8 @@ def main():
         export_function = export_data_with_time_measurement(
             output_data, output_file, sanitize=True
         )
-        t = timeit.timeit(export_function, number=10)
-        print(f"Time taken to export: {t} seconds")
+        time = timeit.timeit(export_function, number=10)
+        print(f"Time taken to export: {time} seconds")
 
         csv_reader.Csv.export(output_data, output_file, sanitize=True)
         csv_reader.Csv.export(ambiguous_data, ambiguous_file, sanitize=True)
