@@ -186,7 +186,7 @@ class MillenniumProcessor(processor.BankProcessor):
                 )  # Use the string representation
 
             # data kategoria priorytet wydano opis
-            # TODO: fix positive/negative values, see line 174
+            # FIXME: positive/negative values, see line 174
             money = 0.0
             if row[3]:
                 money = float(row[3])
