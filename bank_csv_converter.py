@@ -4,7 +4,7 @@ import os
 from typing import List, Tuple
 import utils.csv_reader as csv_reader
 import bank
-from exceptions import exceptions 
+from exceptions import exceptions
 from processors import millennium_processor
 from processors import pekao_sa_processor
 from processors import bank_processor
@@ -14,6 +14,7 @@ import millennium_dict
 import timeit
 
 logging.basicConfig(level=logging.INFO)
+
 
 def determine_processor(filename: str) -> bank_processor.BankProcessor:
     """
@@ -36,6 +37,7 @@ def determine_processor(filename: str) -> bank_processor.BankProcessor:
 
     raise exceptions.WrongSignatureError(signature)
 
+
 def determine_output_files(args, filename) -> Tuple[str, str]:
     """
     Determine the output file names based on the provided arguments and input filename.
@@ -55,15 +57,21 @@ def determine_output_files(args, filename) -> Tuple[str, str]:
 
     return output_file, ambiguous_file
 
+
 def export_data_with_time_measurement(output_data, output_file, sanitize=True):
     return lambda: csv_reader.Csv.export(output_data, output_file, sanitize=sanitize)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Process a CSV file.')
-    parser.add_argument('filename', type=str, help='Path to the CSV file')
-    parser.add_argument('output', type=str, nargs='?', default=None,
-                        help='Output CSV file (default: out_<filename>.csv)')
+    parser = argparse.ArgumentParser(description="Process a CSV file.")
+    parser.add_argument("filename", type=str, help="Path to the CSV file")
+    parser.add_argument(
+        "output",
+        type=str,
+        nargs="?",
+        default=None,
+        help="Output CSV file (default: out_<filename>.csv)",
+    )
 
     args = parser.parse_args()
 
@@ -84,9 +92,11 @@ def main():
         output_file, ambiguous_file = determine_output_files(args, filename)
 
         # Measure the execution time with timeit
-        export_function = export_data_with_time_measurement(output_data, output_file, sanitize=True)
+        export_function = export_data_with_time_measurement(
+            output_data, output_file, sanitize=True
+        )
         t = timeit.timeit(export_function, number=10)
-        print(f'Time taken to export: {t} seconds')
+        print(f"Time taken to export: {t} seconds")
 
         csv_reader.Csv.export(output_data, output_file, sanitize=True)
         csv_reader.Csv.export(ambiguous_data, ambiguous_file, sanitize=True)

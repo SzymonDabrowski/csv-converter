@@ -27,6 +27,17 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Install commit hooks (Windows):
+```
+python -m pre_commit install
+```
+
+In case you would like to perform pre-commit on all files (Windows), do call:
+```
+python.exe -m pre_commit run --all-files
+```
+
+
 ### Usage
 
 1. Run the script:

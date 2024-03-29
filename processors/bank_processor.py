@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple
 
+
 class BankProcessor(ABC):
     @abstractmethod
     def remove_column_names(data: List) -> List:
