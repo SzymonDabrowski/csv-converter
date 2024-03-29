@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Priority(Enum):
     ESSENTIAL = "Essential"
     HAVE_TO_HAVE = "Have to have"

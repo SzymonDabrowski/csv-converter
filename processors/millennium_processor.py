@@ -7,6 +7,7 @@ from bank_names import BankName
 from category import Category
 import processors.bank_processor as processor
 
+
 class MillenniumProcessor(processor.BankProcessor):
     name = BankName.MILLENNIUM
     # use 3, 5, 6 to determine desciption/recipient and category
@@ -20,7 +21,7 @@ class MillenniumProcessor(processor.BankProcessor):
     @staticmethod
     def remove_column_names(data: List) -> List:
         """
-        Returns a list of data with removed column names. 
+        Returns a list of data with removed column names.
         This method assumes that column names are in the first row.
 
         Args:
@@ -40,13 +41,17 @@ class MillenniumProcessor(processor.BankProcessor):
 
         Args:
             data (List[List[str]]): The input data.
-            
+
         Returns:
             List[List[str]]: The filtered and sorted data.
         """
         filtered_data = [[row[i] for i in MillenniumProcessor.columns] for row in data]
-        filtered_data.sort(key=lambda x: datetime.strptime(x[MillenniumProcessor.date_column], MillenniumProcessor.date_format))
-        
+        filtered_data.sort(
+            key=lambda x: datetime.strptime(
+                x[MillenniumProcessor.date_column], MillenniumProcessor.date_format
+            )
+        )
+
         return filtered_data
 
     @staticmethod
@@ -56,17 +61,22 @@ class MillenniumProcessor(processor.BankProcessor):
 
         Args:
             data (List[List[str]]): The input data.
-            
+
         Returns:
             List[str]: The distinct values from the specified column.
         """
-        
+
         # for column in bank.category_columns:
         #     distinct_values = distinct_values.union(set(row[column].lower() for row in data[1:]))
-        # 
+        #
         # append both columns to avoid false results in update_categories
         distinct_values = set()
-        distinct_values = distinct_values.union(set(MillenniumProcessor.append(row, MillenniumProcessor.category_columns) for row in data[1:]))
+        distinct_values = distinct_values.union(
+            set(
+                MillenniumProcessor.append(row, MillenniumProcessor.category_columns)
+                for row in data[1:]
+            )
+        )
         return list(distinct_values)
 
     @staticmethod
@@ -86,7 +96,7 @@ class MillenniumProcessor(processor.BankProcessor):
     @staticmethod
     def update_categories(real_categories: List, category_groups: Dict):
         """
-        Compares real_categories to expected_categories and updates category_groups 
+        Compares real_categories to expected_categories and updates category_groups
         if real_categories contain records not found in expected_categories.
 
         Args:
@@ -96,14 +106,17 @@ class MillenniumProcessor(processor.BankProcessor):
         """
 
         for expected_value in MillenniumProcessor.expected_categories:
-            for actual_value in real_categories:
+            categories_copy = real_categories.copy()
+            for actual_value in categories_copy:
                 if expected_value in actual_value:
                     real_categories.remove(actual_value)
 
         # Perhaps these values should not be added as categories?
         if real_categories:
-            category_groups[Category.OTHERS]['categories'].extend(real_categories)
-            logging.info(f'The following new categories were added to the "Inne" category group: {real_categories}')
+            category_groups[Category.OTHERS]["categories"].extend(real_categories)
+            logging.info(
+                f'The following new categories were added to the "Inne" category group: {real_categories}'
+            )
 
     @staticmethod
     def prepare_data(data: List):
@@ -113,7 +126,7 @@ class MillenniumProcessor(processor.BankProcessor):
         redundant column afterwards.
         """
         for item in data:
-            item[2] = item[2] + ' ' + item[3]
+            item[2] = item[2] + " " + item[3]
             del item[3]
 
     @staticmethod
@@ -133,43 +146,63 @@ class MillenniumProcessor(processor.BankProcessor):
         Returns:
             List[List[str]]: The output data with updated priority information.
         """
-        exceptions = {
-            priority.Priority.SHOULDNT_HAVE: ['żabka', 'zabka', 'mcdonalds']
-        }
+        exceptions = {priority.Priority.SHOULDNT_HAVE: ["żabka", "zabka", "mcdonalds"]}
 
         # merge columns with categories
         MillenniumProcessor.prepare_data(data)
 
-        output_data = []       
+        output_data = []
         for row in data:
             output_row = [None] * 5
-            category = row[2].lower() # 2 and 3 are merged now
-            description = row[2].lower() # 1 is not descriptive, 2 and 3 are
+            category = row[2].lower()  # 2 and 3 are merged now
+            description = row[2].lower()  # 1 is not descriptive, 2 and 3 are
 
-            matching_category_group = MillenniumProcessor.get_category_group(row, category, category_groups.items())
+            matching_category_group = MillenniumProcessor.get_category_group(
+                row, category, category_groups.items()
+            )
 
             output_priority = ""
             # Check if any exception is a substring of the description
-            exception_found = any(exception in description for exception in exceptions[priority.Priority.SHOULDNT_HAVE])
+            exception_found = any(
+                exception in description
+                for exception in exceptions[priority.Priority.SHOULDNT_HAVE]
+            )
             if exception_found:
-                output_priority = priority.Priority.SHOULDNT_HAVE.value  # Use the string representation
+                output_priority = (
+                    priority.Priority.SHOULDNT_HAVE.value
+                )  # Use the string representation
             elif matching_category_group is not Category.NONE:
                 # Access the priority information and update it if needed
-                priority_enum = category_groups[matching_category_group]['priority'] or priority.Priority.ESSENTIAL
+                priority_enum = (
+                    category_groups[matching_category_group]["priority"]
+                    or priority.Priority.ESSENTIAL
+                )
                 output_priority = priority_enum.value  # Use the string representation
             else:
                 logging.warning(f"Category '{category}' not found in category_groups")
                 # assign default value
-                output_priority = priority.Priority.ESSENTIAL.value  # Use the string representation
+                output_priority = (
+                    priority.Priority.ESSENTIAL.value
+                )  # Use the string representation
 
             # data kategoria priorytet wydano opis
+            # FIXME: positive/negative values, see line 174
             money = 0.0
             if row[3]:
                 money = float(row[3])
             elif row[4]:
                 money = float(row[4])
 
-            output_row = [row[0], matching_category_group.value, output_priority, money, row[1]]
+            money = -1 * money
+            money = str(money).replace(".", ",")
+
+            output_row = [
+                row[0],
+                matching_category_group.value,
+                output_priority,
+                money,
+                row[1],
+            ]
             output_data.append(output_row)
 
         return output_data
@@ -185,9 +218,9 @@ class MillenniumProcessor(processor.BankProcessor):
                 break
 
             # category is a whole long string
-            # search for a substring of 
+            # search for a substring of
             # group_info['categories'] in it
-            for val in group_info['categories']:
+            for val in group_info["categories"]:
                 if val in category:
                     # description should be changed, e.g. when string like:
                     # jmp s.a. biedronka 101, poznan, ul... is found, replace it with:
@@ -207,7 +240,7 @@ class MillenniumProcessor(processor.BankProcessor):
             data (List[List[Union[str, int, None]]]): Input data.
 
         Returns:
-            Tuple[List, List]: A tuple containing the correct data and ambiguous 
+            Tuple[List, List]: A tuple containing the correct data and ambiguous
             data in that order.
         """
         ambiguous_data = []
@@ -215,9 +248,13 @@ class MillenniumProcessor(processor.BankProcessor):
         for i, item in enumerate(data):
             # Check conditions for ambiguous data
             if (
-                (isinstance(item[3], str) and item[3][0] != '-') or  # Check positive value in 4th column
-                (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
-                (item[2] is None)                                    # Check None in 3rd column
+                (isinstance(item[3], str) and item[3] and item[3][0] == "-")
+                or (  # Check negative (income) value in 4th column
+                    item[1] is None or item[1] == 0
+                )
+                or (  # Check None or 0 in 2nd column
+                    item[2] is None
+                )  # Check None in 3rd column
             ):
                 # If any condition is met, move the item to ambiguous_data
                 ambiguous_data.append(item)
@@ -227,7 +264,7 @@ class MillenniumProcessor(processor.BankProcessor):
         # Remove items from data in reverse order to avoid index issues
         for index in reversed(indices_to_remove):
             data.pop(index)
-        
+
         return (data, ambiguous_data)
 
     @staticmethod
