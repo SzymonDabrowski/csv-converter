@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Category(Enum):
     FOOD = "Jedzenie"
     HOUSEHOLD_APPLIANCE = "AGD"
