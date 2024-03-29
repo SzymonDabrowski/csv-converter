@@ -170,8 +170,11 @@ class MillenniumProcessor(processor.BankProcessor):
                 money = float(row[3])
             elif row[4]:
                 money = float(row[4])
+            
+            money = -1 * money
+            money = str(money).replace('.', ',')
 
-            output_row = [row[0], matching_category_group.value, output_priority, -1 * money, row[1]]
+            output_row = [row[0], matching_category_group.value, output_priority, money, row[1]]
             output_data.append(output_row)
 
         return output_data
@@ -217,7 +220,7 @@ class MillenniumProcessor(processor.BankProcessor):
         for i, item in enumerate(data):
             # Check conditions for ambiguous data
             if (
-                (isinstance(item[3], str) and item[3][0] == '-') or  # Check negative (income) value in 4th column
+                (isinstance(item[3], str) and item[3] and item[3][0] == '-') or  # Check negative (income) value in 4th column
                 (item[1] is None or item[1] == 0) or                 # Check None or 0 in 2nd column
                 (item[2] is None)                                    # Check None in 3rd column
             ):
