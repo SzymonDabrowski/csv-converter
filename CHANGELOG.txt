@@ -16,6 +16,7 @@ are injected into Bank instance by passing them as constructor arguments.
 - Docstring to multiple methods and classes.
 - Exceptions module
 - Category enum
+- Commit hooks to the repository
 
 ### Release Notes
 
@@ -23,7 +24,10 @@ New classes have been added to this release, which provide cleaner and more
 readable code in form of a layer of abstraction. \
 Category enum is used across whole application which decreases changes for typos. \
 Docstrings have been added to multiple classes and methods for sake of proper documentation.\
-Bank uses deep copy of data - it prevents leaky abstraction.
+Bank uses deep copy of data - it prevents leaky abstraction. \
+Commit hooks have been added to this repository. If you want to work on this repository,
+please follow instruction in README.md file to first install pre-commit and then
+intall commit hooks.
 
 ## [0.0.2] - 2024-02-03
 
