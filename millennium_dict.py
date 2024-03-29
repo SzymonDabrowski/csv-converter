@@ -13,10 +13,10 @@ expected_categories = ['przelew własny', 'przelew natychmiastowy', 'przelew bli
                        'jakdojade.pl', 'bolt.eu', 'freenow', 'koleo.pl', 'koleje wielkopolskie', 'koleo bilety kolejowe',
                        'kasa biletowa kw', 'koleo makes trains gre', 'przewozy regionalne', 'orlen stacja', 'www.mobilet.pl',
                        'avista sp z o o', 'ec*mpay aplikacja', 'ec*zasilenie konta', 'automat spec sp zoo', 'apteka',
-                       'stomatolog', 'rentgen', 'syntak spółka', 'rossmann', 'drogeria natura', 'www.madeinlab.pl',
+                       'stomatolog', 'rentgen', 'syntak spółka', 'toogoodtogo', 'rossmann', 'drogeria natura', 'www.madeinlab.pl',
                        'restauracja', 'empik.com', 'empik s.a.', 'google play apps', 'hbo max', 'legimi s.a.', 'tvn s.a.',
                        'lody bosko', 'cacao republica', 'rozlewnia ck wina', 'zdolni spolka zoo', 'the table sp. z o.o.',
-                       'boardgamearena', 'chemeli suneli', 'inea sa', 'ebok.enea.pl', 'opłata miesięczna', 'opł. mies.',
+                       'boardgamearena', 'chemeli suneli', 'inea sa', 'www.inea.pl', 'ebok.enea.pl', 'opłata miesięczna', 'opł. mies.',
                        'opłata za', 'bgk', 'binance.com', 'ccc', 'lpp cropp', 'wizaki', 'salon nipplex']
 
 categories = {
@@ -47,7 +47,8 @@ categories = {
          '1-minute',
          'tartaletka',
          'phu anna',
-         'mirabe'],
+         'mirabe',
+         'toogoodtogo'],
     Category.HOUSEHOLD_APPLIANCE: 
         ['pepco'],
     Category.TRANSPORTATION: 
@@ -99,6 +100,7 @@ categories = {
          'chemeli suneli'],
     Category.BILLS: 
         ['inea sa',
+         'www.inea.pl',
          'ebok.enea.pl',
          'opłata miesięczna',
          'opł. mies.',

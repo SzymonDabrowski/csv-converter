@@ -11,6 +11,8 @@ from processors import bank_processor
 import pekao_sa_dict
 import millennium_dict
 
+import timeit
+
 logging.basicConfig(level=logging.INFO)
 
 def determine_processor(filename: str) -> bank_processor.BankProcessor:
@@ -53,6 +55,10 @@ def determine_output_files(args, filename) -> Tuple[str, str]:
 
     return output_file, ambiguous_file
 
+def export_data_with_time_measurement(output_data, output_file, sanitize=True):
+    return lambda: csv_reader.Csv.export(output_data, output_file, sanitize=sanitize)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Process a CSV file.')
     parser.add_argument('filename', type=str, help='Path to the CSV file')
@@ -66,7 +72,7 @@ def main():
     processor = determine_processor(filename)
     bank_instance = bank.Bank(processor)
 
-    data = csv_reader.Csv.read(filename)
+    data = csv_reader.Csv.read(filename, sanitize=True)
     processed_data = bank_instance.process(data)
 
     ambiguous_data = []
@@ -76,6 +82,11 @@ def main():
         logging.info("No output data available")
     else:
         output_file, ambiguous_file = determine_output_files(args, filename)
+
+        # Measure the execution time with timeit
+        export_function = export_data_with_time_measurement(output_data, output_file, sanitize=True)
+        t = timeit.timeit(export_function, number=10)
+        print(f'Time taken to export: {t} seconds')
 
         csv_reader.Csv.export(output_data, output_file, sanitize=True)
         csv_reader.Csv.export(ambiguous_data, ambiguous_file, sanitize=True)

@@ -13,4 +13,4 @@ class Category(Enum):
     OTHERS = "Inne"
     CLOTHES = "Odzież"
     IGNORED = 0
-    NONE = None
+    NONE = 0
