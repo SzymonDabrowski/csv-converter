@@ -37,17 +37,19 @@ class Bank:
 
         return self.processor.process(filtered_and_sorted_data, category_groups)
 
-    def filter_ambiguous_data(self, data: List) -> Tuple:
+    def group_output_data(self, data: List) -> Tuple:
         """
-        Filter and separate ambiguous data from processed bank transactions.
+        Filter and separate ambiguous and ignored data from processed bank transactions.
 
         Args:
             data (List[List[str]]): Processed bank transaction data.
 
         This method takes the processed bank transaction data and separates items
         with ambiguous or incomplete information, moving them to the specified
-        `ambiguous_data` list. It should be called after the `process` method to
+        `ambiguous_data` list. Additionally, it check for transaction with category
+        set to Categories.IGNORED and moves them to `ignored_data` list.
+        It should be called after the `process` method to
         handle any data that couldn't be definitively categorized or prioritized.
         """
         input_data = copy.deepcopy(data)
-        return self.processor.filter_ambiguous_data(input_data)
+        return self.processor.group_output_data(input_data)

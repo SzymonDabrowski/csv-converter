@@ -53,8 +53,9 @@ def determine_output_files(args, filename) -> Tuple[str, str]:
 
     output_file = output_file or f"out_{base_filename}.csv"
     ambiguous_file = os.path.splitext(output_file)[0] + "_ambiguous.csv"
+    ignored_file = os.path.splitext(output_file)[0] + "_ignored.csv"
 
-    return output_file, ambiguous_file
+    return (output_file, ambiguous_file, ignored_file)
 
 
 def export_data_with_time_measurement(output_data, output_file, sanitize=True):
@@ -79,16 +80,20 @@ def main():
     processor = determine_processor(filename)
     bank_instance = bank.Bank(processor)
 
-    data = csv_reader.Csv.read(filename, sanitize=True)
+    data = csv_reader.Csv.read(filename, sanitize=True, lowercase=True)
     processed_data = bank_instance.process(data)
 
     ambiguous_data = []
-    output_data, ambiguous_data = bank_instance.filter_ambiguous_data(processed_data)
+    output_data, ambiguous_data, ignored_data = bank_instance.group_output_data(
+        processed_data
+    )
 
     if output_data is None and ambiguous_data is None:
         logging.info("No output data available")
     else:
-        output_file, ambiguous_file = determine_output_files(args, filename)
+        output_file, ambiguous_file, ignored_file = determine_output_files(
+            args, filename
+        )
 
         # Measure the execution time with timeit
         export_function = export_data_with_time_measurement(
@@ -99,6 +104,7 @@ def main():
 
         csv_reader.Csv.export(output_data, output_file, sanitize=True)
         csv_reader.Csv.export(ambiguous_data, ambiguous_file, sanitize=True)
+        csv_reader.Csv.export(ignored_data, ignored_file, sanitize=True)
 
 
 if __name__ == "__main__":

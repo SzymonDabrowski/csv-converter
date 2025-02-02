@@ -12,14 +12,27 @@ class Csv:
             encoding = chardet.detect(raw_file.read(1024))["encoding"]
 
         with open(filename, "r", newline="", encoding=encoding) as file:
-            dialect = csv.Sniffer().sniff(file.read(4096))  # throws
-            file.seek(0)
+            raw_data = file.read()
+            # Remove single quotes from the data
+            # Pekao SA files contain some single quotes
+            # due to this fact this reader reads less fields
+            # than there are columns
+            cleaned_data = raw_data.replace("'", "")
+
+            # Use csv.Sniffer to detect the dialect from the cleaned data
+            sample = cleaned_data[:4096]
+            try:
+                dialect = csv.Sniffer().sniff(sample)
+            except csv.Error:
+                dialect = csv.get_dialect("excel")  # Default dialect
+
             reader = csv.reader(
-                file, delimiter=dialect.delimiter, quotechar=dialect.quotechar
+                cleaned_data.splitlines(),
+                delimiter=dialect.delimiter,
+                quotechar=dialect.quotechar,
             )
-            return (
-                sanitizer.Sanitizer.sanitize_data(reader) if sanitize else list(reader)
-            )
+            data = list(reader)
+            return sanitizer.Sanitizer.sanitize_data(data) if sanitize else data
 
     @staticmethod
     def export(data: List[List[str]], filename: str, sanitize: bool = False) -> None:
