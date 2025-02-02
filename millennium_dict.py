@@ -95,18 +95,28 @@ expected_categories = [
     "lpp cropp",
     "wizaki",
     "salon nipplex",
+    "pyszne.pl",
+    "maxi zoo",
+    "lego",
+    "muuburger",
+    "www.kupbilecik.pl",
+    "ciuszki",
+    "natura etc swarzedz",
+    "fryzjer",
+    "leroy merlin",
+    "toaleta",
+    "mmt supermarket oh24 swarzedz",
+    "kaufland",
 ]
 
 categories = {
     Category.IGNORED: [
         "przelew własny",
         "przelew natychmiastowy",
-        "przelew blik",
         "przelew na telefon",
-        "przelew krajowy",
+        "przelew krajowy",  # FIXME: not ignored?
         "moneyback",
         "podatek od odsetek",
-        "bank millennium sa",
         "kapitalizacja ods.",
     ],
     Category.FOOD: [
@@ -128,6 +138,9 @@ categories = {
         "phu anna",
         "mirabe",
         "toogoodtogo",
+        "natura etc swarzedz",
+        "mmt supermarket oh24 swarzedz",
+        "kaufland",
     ],
     Category.HOUSEHOLD_APPLIANCE: ["pepco"],
     Category.TRANSPORTATION: [
@@ -150,9 +163,9 @@ categories = {
         "ec*zasilenie konta",
         "automat spec sp zoo",
     ],
-    Category.HOUSE: [],
-    Category.HEALTH: ["apteka", "stomatolog", "rentgen", "syntak spółka"],
-    Category.BEAUTY: ["rossmann", "drogeria natura", "www.madeinlab.pl"],
+    Category.HOUSE: ["leroy merlin"],
+    Category.HEALTH: ["apteka", "stomatolog", "rentgen", "syntak spółka", "toaleta"],
+    Category.BEAUTY: ["rossmann", "drogeria natura", "www.madeinlab.pl", "fryzjer"],
     Category.SELF_PROGRESS: [],
     Category.FUN: [
         "restauracja",
@@ -169,6 +182,10 @@ categories = {
         "the table sp. z o.o.",
         "boardgamearena",
         "chemeli suneli",
+        "pyszne.pl",
+        "lego",
+        "muuburger",
+        "www.kupbilecik.pl",
     ],
     Category.BILLS: [
         "inea sa",
@@ -178,8 +195,15 @@ categories = {
         "opł. mies.",
         "opłata za",
     ],
-    Category.OTHERS: ["bgk", "binance.com"],
-    Category.CLOTHES: ["ccc", "lpp cropp", "wizaki", "salon nipplex"],  # washing
+    Category.OTHERS: ["bgk", "binance.com", "przelew blik", "bank millennium sa"],
+    Category.CLOTHES: [
+        "ccc",
+        "lpp cropp",
+        "wizaki",
+        "salon nipplex",
+        "ciuszki",
+    ],  # washing
+    Category.DOG: ["maxi zoo"],
 }
 
 category_groups = {
@@ -227,5 +251,9 @@ category_groups = {
     Category.CLOTHES: {
         "categories": categories[Category.CLOTHES],
         "priority": priority.Priority.HAVE_TO_HAVE,
+    },
+    Category.DOG: {
+        "categories": categories[Category.DOG],
+        "priority": priority.Priority.ESSENTIAL,
     },
 }
