@@ -132,18 +132,22 @@ class PekaoSaProcessor(processor.BankProcessor):
                 output_priority = (
                     priority.Priority.SHOULDNT_HAVE.value
                 )  # Use the string representation
-            elif matching_category_group is not Category.NONE:
+            elif matching_category_group is Category.NONE:
+                logging.warning(
+                    f"Category '{category}' not found in pekao sa category_groups"
+                )
+                # Assign default value
+                # Use the string representation
+                output_priority = priority.Priority.ESSENTIAL.value
+            elif matching_category_group is Category.IGNORED:
+                output_priority = "-"
+            else:
                 # Access the priority information and update it if needed
                 priority_enum = (
                     category_groups[matching_category_group]["priority"]
                     or priority.Priority.ESSENTIAL
                 )
                 output_priority = priority_enum.value  # Use the string representation
-            else:
-                logging.warning(f"Category '{category}' not found in category_groups")
-                # Assign default value
-                # Use the string representation
-                output_priority = priority.Priority.ESSENTIAL.value
 
             # change , to . in float values
             # FIXME: fix this and use locale or maybe add decimal separator
@@ -166,10 +170,10 @@ class PekaoSaProcessor(processor.BankProcessor):
         return output_data
 
     @staticmethod
-    def filter_ambiguous_data(data: List) -> Tuple:
+    def group_output_data(data: List) -> Tuple:
         """
-        Separates ambiguous data from correct one. Returns a tuple of correct
-        data and ambiguous data in that order.
+        Separates ambiguous and ignored data from correct one. Returns a tuple of correct,
+        ambiguous and ignored data in that order.
 
         Args:
             data (List[List[Union[str, int, None]]]): Input data.
@@ -178,10 +182,15 @@ class PekaoSaProcessor(processor.BankProcessor):
             Tuple[List, List]: A tuple containing the correct data and ambiguous
             data in that order.
         """
+        # TODO: Category.IGNORED
         ambiguous_data = []
+        ignored_data = []
         indices_to_remove = []
         for i, item in enumerate(data):
-            if (
+            if item[1] == Category.IGNORED.value:
+                ignored_data.append(item)
+                indices_to_remove.append(i)
+            elif (  # Check for ambiguities
                 (isinstance(item[3], str) and item[3][0] == "-")
                 or (  # Check negative (income) value in 4th column
                     item[1] is None or item[1] == 0
@@ -190,16 +199,14 @@ class PekaoSaProcessor(processor.BankProcessor):
                     item[2] is None
                 )  # Check None in 3rd column
             ):
-                # If any condition is met, move the item to ambiguous_data
                 ambiguous_data.append(item)
-                # Add the index to the list of indices to remove
                 indices_to_remove.append(i)
 
         # Remove items from data in reverse order to avoid index issues
         for index in reversed(indices_to_remove):
             data.pop(index)
 
-        return (data, ambiguous_data)
+        return (data, ambiguous_data, ignored_data)
 
     @staticmethod
     def get_category_groups() -> Dict:
