@@ -80,7 +80,7 @@ def main():
     processor = determine_processor(filename)
     bank_instance = bank.Bank(processor)
 
-    data = csv_reader.Csv.read(filename, sanitize=True, lowercase=True)
+    data = csv_reader.Csv.read(filename, sanitize=True)
     processed_data = bank_instance.process(data)
 
     ambiguous_data = []
