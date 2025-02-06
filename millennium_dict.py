@@ -107,6 +107,12 @@ expected_categories = [
     "toaleta",
     "mmt supermarket oh24 swarzedz",
     "kaufland",
+    "przelew na drugie konto",
+    "pakamera",
+    "orange.pl",
+    "www.hebe.pl",
+    "jmdif sp.z.o.o. hebe",
+    "odsetki premiowe",
 ]
 
 categories = {
@@ -118,6 +124,8 @@ categories = {
         "moneyback",
         "podatek od odsetek",
         "kapitalizacja ods.",
+        "przelew na drugie konto",  # custom name for my own operations
+        "odsetki premiowe",
     ],
     Category.FOOD: [
         "ert wypieki",
@@ -141,6 +149,7 @@ categories = {
         "natura etc swarzedz",
         "mmt supermarket oh24 swarzedz",
         "kaufland",
+        "pakamera",
     ],
     Category.HOUSEHOLD_APPLIANCE: ["pepco"],
     Category.TRANSPORTATION: [
@@ -165,7 +174,14 @@ categories = {
     ],
     Category.HOUSE: ["leroy merlin"],
     Category.HEALTH: ["apteka", "stomatolog", "rentgen", "syntak spółka", "toaleta"],
-    Category.BEAUTY: ["rossmann", "drogeria natura", "www.madeinlab.pl", "fryzjer"],
+    Category.BEAUTY: [
+        "rossmann",
+        "drogeria natura",
+        "www.madeinlab.pl",
+        "fryzjer",
+        "www.hebe.pl",
+        "jmdif sp.z.o.o. hebe",
+    ],
     Category.SELF_PROGRESS: [],
     Category.FUN: [
         "restauracja",
@@ -194,6 +210,7 @@ categories = {
         "opłata miesięczna",
         "opł. mies.",
         "opłata za",
+        "orange.pl",
     ],
     Category.OTHERS: ["bgk", "binance.com", "przelew blik", "bank millennium sa"],
     Category.CLOTHES: [
