@@ -25,7 +25,7 @@ whilst ignoring generated files, i.e. ones matching following patterns, where
 - out_<input_file>_ambiguous.csv
 - out_<input_file>_ignored.csv
 Added out_<input_file>_ignored.csv to generated files, which contains internal
-operations or other operations that user decided to specify under Category.IGNORED.
+operations or other operations that user decided to specify under Category.IGNORED.\
 Extended bank dictionaries with new categories, improving automation.
 
 ## [0.0.3] - 2024-02-03
