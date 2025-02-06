@@ -13,5 +13,6 @@ class Category(Enum):
     BILLS = "Rachunki"
     OTHERS = "Inne"
     CLOTHES = "Odzież"
-    IGNORED = 0
+    DOG = "Pies"
+    IGNORED = -1
     NONE = 0

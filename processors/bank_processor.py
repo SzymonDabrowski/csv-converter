@@ -31,10 +31,10 @@ class BankProcessor(ABC):
         """
 
     @abstractmethod
-    def filter_ambiguous_data(data: List) -> Tuple:
+    def group_output_data(data: List) -> Tuple:
         """
-        Separates ambiguous data from correct one. Returns a tuple of correct
-        data and ambiguous data in that order.
+        Separates ambiguous and ignored data from correct one. Returns a tuple of correct,
+        ambiguous and ignored data in that order.
         """
 
     # pylint: disable=no-method-argument

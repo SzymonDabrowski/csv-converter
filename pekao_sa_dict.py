@@ -42,6 +42,13 @@ expected_categories = [
     "podatki",
     "multimedia",
     "spłata karty kredytowej",
+    # TODO: test if categories below have correct descriptions/values in output files
+    "zwierzęta domowe",
+    "taxi",
+    "internet, tv, telefon",
+    "sprzedaż",
+    "wyposażenie",
+    "ubezpieczenia",
 ]
 
 category_groups = {
@@ -54,6 +61,7 @@ category_groups = {
             "spłata kredytu / pożyczki",
             "przelew wewnętrzny",
             "odsetki, zwrot z inwestycji",
+            "sprzedaż",
         ],
         "priority": None,
     },
@@ -62,11 +70,11 @@ category_groups = {
         "priority": priority.Priority.ESSENTIAL,
     },
     Category.HOUSEHOLD_APPLIANCE: {
-        "categories": [],
+        "categories": ["wyposażenie"],
         "priority": priority.Priority.ESSENTIAL,
     },
     Category.TRANSPORTATION: {
-        "categories": ["transport publiczny", "paliwo"],
+        "categories": ["transport publiczny", "paliwo", "taxi"],
         "priority": priority.Priority.HAVE_TO_HAVE,
     },
     Category.HOUSE: {"categories": [], "priority": priority.Priority.HAVE_TO_HAVE},
@@ -87,7 +95,12 @@ category_groups = {
         "priority": priority.Priority.NICE_TO_HAVE,
     },
     Category.BILLS: {
-        "categories": ["opłaty bankowe", "podatki"],
+        "categories": [
+            "opłaty bankowe",
+            "podatki",
+            "internet, tv, telefon",
+            "ubezpieczenia",
+        ],
         "priority": priority.Priority.HAVE_TO_HAVE,
     },
     Category.OTHERS: {
@@ -103,5 +116,9 @@ category_groups = {
     Category.CLOTHES: {
         "categories": ["ubrania"],
         "priority": priority.Priority.HAVE_TO_HAVE,
+    },
+    Category.DOG: {
+        "categories": ["zwierzęta domowe"],
+        "priority": priority.Priority.ESSENTIAL,
     },
 }
