@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] - 2025-02-06
+
+### Changed
+
+- Improved csv dialect detection
+- Program generates addiotional out_*_ignored.csv, see Release Notes section
+  below for detailed explanation
+
+### Added
+
+- run.bat script
+- new entries to bank dictionaries
+
+### Release Notes
+
+Introduces run.bat script, which allows user to run the program without needing to
+specify the filename. It gathers all the .csv files in project root directory,
+whilst ignoring generated files, i.e. ones matching following patterns, where
+<input_file> is non-generated input file name. Patterns are not regexes:
+- out_<input_file>.csv
+- out_<input_file>_ambiguous.csv
+- out_<input_file>_ignored.csv
+Added out_<input_file>_ignored.csv to generated files, which contains internal
+operations or other operations that user decided to specify under Category.IGNORED.
+Extended bank dictionaries with new categories, improving automation.
+
 ## [0.0.3] - 2024-02-03
 
 ### Changed
